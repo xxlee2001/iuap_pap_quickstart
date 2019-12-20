@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper 	namespace="com.yonyou.iuap.allowances.dao.AllowancesMapper">
+
+	<resultMap id="BaseResultMap" type="java.util.HashMap">
+		<id column="id" jdbcType="VARCHAR" property="id" />
+		<result column="CODE" property="code" />
+		<result column="NAME" property="name" />
+		<result column="SEX" property="sex" />
+		<result column="DEPT" property="dept" />
+		<result column="POST_LEVEL" property="postLevel" />
+		<result column="SERVICE_YEARS" property="serviceYears" />
+		<result column="SERVICE_YEARS_COMPANY"
+			property="serviceYearsCompany" />
+		<result column="YEAR" property="year" />
+		<result column="MONTH" property="month" />
+		<result column="APPLY_TIME" property="applyTime" />
+		<result column="ALLOWANCE_TYPE" property="allowanceType" />
+		<result column="ALLOWANCE_STANDARD"
+			property="allowanceStandard" />
+		<result column="ALLOWANCE_ACTUAL" property="allowanceActual" />
+		<result column="EXDEEDS" property="exdeeds" />
+		<result column="PICK_TYPE" property="pickType" />
+		<result column="PICK_TIME" property="pickTime" />
+		<result column="REMARK" property="remark" />
+
+		<result column="last_modified" property="lastModified" />
+		<result column="last_modify_user" property="lastModifyUser" />
+		<result column="create_time" property="createTime" />
+		<result column="create_user" property="createUser" />
+
+		<result column="tenant_id" property="tenantid" />
+		<result column="dr" property="dr" />
+		<result column="ts" property="ts" />
+	</resultMap>
+
+	<sql id="selectClause">
+		(
+		SELECT ID, CODE, NAME, SEX, DEPT,	POST_LEVEL, 
+		               SERVICE_YEARS, SERVICE_YEARS_COMPANY,
+		               YEAR, MONTH, APPLY_TIME,
+		               ALLOWANCE_TYPE, ALLOWANCE_STANDARD, ALLOWANCE_ACTUAL,
+		               EXDEEDS, PICK_TYPE, PICK_TIME, REMARK
+		               last_modified, last_modify_user, create_time, create_user,
+		              dr, ts, tenant_id
+		FROM  IUAPD_ALLOWANCES
+		) t
+	</sql>
+
+	<sql id="orderClause">
+		<if test="page != null">
+			<if test="page.sort!=null">
+				order by
+				<foreach collection="page.sort" item="item" separator=",">
+					${item.property} ${item.direction}
+				</foreach>
+			</if>
+		</if>
+		<if test="page == null or page.sort==null">
+			order by ts DESC
+		</if>
+	</sql>
+
+	<sql id="whereClause">
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="whereStatements  != null and whereStatements.size>0 ">
+				<foreach collection="whereStatements" item="item">
+					<if test="item.condition == 'EQ'">
+						and t.${item.key} = '${item.value}'
+					</if>
+					<if test="item.condition == 'GT'">
+						and t.${item.key} &gt; '${item.value}'
+					</if>
+					<if test="item.condition == 'LT'">
+						and t.${item.key} &lt; '${item.value}'
+					</if>
+					<if test="item.condition == 'GTEQ'">
+						and t.${item.key} &gt;= '${item.value}'
+					</if>
+					<if test="item.condition == 'LTEQ'">
+						and t.${item.key} &lt;= '${item.value}'
+					</if>
+					<if test="item.condition == 'LIKE'">
+						and t.${item.key} LIKE CONCAT(CONCAT('%',
+						'${item.value}'), '%')
+					</if>
+					<if test="item.condition == 'LLIKE'">
+						and t.${item.key} LIKE CONCAT('%', '${item.value}')
+					</if>
+					<if test="item.condition == 'RLIKE'">
+						and t.${item.key} LIKE CONCAT('${item.value}', '%')
+					</if>
+					<if test="item.condition == 'RANGE' and item.value!=null   ">
+						and t.${item.key} between
+						<foreach collection="item.value" item="valueItem1"
+							separator=" and ">
+							'${valueItem1}'
+						</foreach>
+					</if>
+					<if test="item.condition == 'IN' and item.value!=null  ">
+						and t.${item.key} in(
+						<foreach collection="item.value" item="valueItem2"
+							separator=" , ">
+							'${valueItem2}'
+						</foreach>
+						)
+					</if>
+					<if test="item.condition == 'UEQ'">
+						and t.${item.key} != '${item.value}'
+					</if>
+					<if test="item.condition == 'ULIKE'">
+						and t.${item.key} NOT LIKE CONCAT(CONCAT('%',
+						'${item.value}'), '%')
+					</if>
+					<if test="item.condition == 'START'">
+						and t.${item.key} LIKE CONCAT('${item.value}', '%')
+					</if>
+					<if test="item.condition == 'END'">
+						and t.${item.key} LIKE CONCAT('%', '${item.value}')
+					</if>
+					<if test="item.condition == 'OTHER'">
+						and ${item.value}
+					</if>
+				</foreach>
+			</if>
+		</trim>
+	</sql>
+
+	<select id="selectAllByPage" resultMap="BaseResultMap">
+			SELECT t.* FROM
+			<include refid="selectClause" />
+			<include refid="whereClause" />
+			<include refid="orderClause" />
+	</select>
+
+</mapper>
